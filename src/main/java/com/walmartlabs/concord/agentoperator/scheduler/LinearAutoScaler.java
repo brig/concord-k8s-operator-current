@@ -75,14 +75,15 @@ public class LinearAutoScaler implements AutoScaler {
         AgentPoolConfiguration cfg = i.getResource().getSpec();
 
         String flavor = (String) ConfigurationUtils.get(cfg.getQueueSelector(), "agent", "flavor");
-        List<ProcessQueueEntry> queueEntries = processQueueClient.query("ENQUEUED", cfg.getMaxSize(), flavor);
+        String clusterAlias = (String) ConfigurationUtils.get(cfg.getQueueSelector(), "agent", "clusterAlias");
+        List<ProcessQueueEntry> queueEntries = processQueueClient.query("ENQUEUED", cfg.getMaxSize(), flavor, clusterAlias);
 
         // count the currently running pods
         int podsCount = podCounter.apply(i.getName());
 
         // the number of processes waiting for an agent in the current pool
         int enqueuedCount = queueEntries.size();
-        int runningCount = processQueueClient.query("RUNNING", cfg.getMaxSize(), flavor).size();
+        int runningCount = processQueueClient.query("RUNNING", cfg.getMaxSize(), flavor, clusterAlias).size();
         int freePodsCount = Math.max(podsCount - runningCount, 0);
 
         int increment = 0;
