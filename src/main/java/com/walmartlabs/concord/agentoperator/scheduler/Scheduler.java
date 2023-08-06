@@ -108,8 +108,8 @@ public class Scheduler {
             try {
                 switch (i.getStatus()) {
                     case ACTIVE: {
-                        updateTargetSize(i);
-                        processActive(i);
+                        AgentPoolInstance updated = updateTargetSize(i);
+                        processActive(updated);
                         break;
                     }
                     case DELETED: {
@@ -145,14 +145,18 @@ public class Scheduler {
         }
     }
 
-    private void updateTargetSize(AgentPoolInstance i) throws IOException {
+    private AgentPoolInstance updateTargetSize(AgentPoolInstance i) throws IOException {
         if (!i.getResource().getSpec().isAutoScale()) {
-            return;
+            return i;
         }
 
+        AgentPoolInstance result = autoScalerFactory.create(i).apply(i);
+
         synchronized (pools) {
-            pools.put(i.getName(), autoScalerFactory.create(i).apply(i));
+            pools.put(i.getName(), result);
         }
+
+        return result;
     }
 
     private void processActive(AgentPoolInstance i) throws IOException {
