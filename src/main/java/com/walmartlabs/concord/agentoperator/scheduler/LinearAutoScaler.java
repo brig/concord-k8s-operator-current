@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -76,14 +77,16 @@ public class LinearAutoScaler implements AutoScaler {
 
         String flavor = (String) ConfigurationUtils.get(cfg.getQueueSelector(), "agent", "flavor");
         String clusterAlias = (String) ConfigurationUtils.get(cfg.getQueueSelector(), "agent", "clusterAlias");
-        List<ProcessQueueEntry> queueEntries = processQueueClient.query("ENQUEUED", cfg.getMaxSize(), flavor, clusterAlias);
+        String logicalClusterAlias = (String) ConfigurationUtils.get(cfg.getQueueSelector(), "agent", "logicalClusterAlias");
+
+        List<ProcessQueueEntry> queueEntries = query("ENQUEUED", cfg, flavor, clusterAlias, logicalClusterAlias);
 
         // count the currently running pods
         int podsCount = podCounter.apply(i.getName());
 
         // the number of processes waiting for an agent in the current pool
         int enqueuedCount = queueEntries.size();
-        int runningCount = processQueueClient.query("RUNNING", cfg.getMaxSize(), flavor, clusterAlias).size();
+        int runningCount = query("RUNNING", cfg, flavor, clusterAlias, logicalClusterAlias).size();
         int freePodsCount = Math.max(podsCount - runningCount, 0);
 
         int increment = 0;
@@ -119,5 +122,18 @@ public class LinearAutoScaler implements AutoScaler {
         targetSize = Math.min(targetSize, cfg.getMaxSize());
         log.info("apply ['{}'] -> updated to {}, pods: {}, free: {}, enqueued: {}, running: {}", i.getName(), targetSize, podsCount, freePodsCount, enqueuedCount, runningCount);
         return AgentPoolInstance.updateTargetSize(i, targetSize, scaleUpTimeStamp, scaleDownTimeStamp);
+    }
+
+    // TODO: we need endpoint where we can put query filters..
+    private List<ProcessQueueEntry> query(String status, AgentPoolConfiguration cfg, String flavor, String clusterAlias, String logicalClusterAlias) throws IOException {
+        List<ProcessQueueEntry> clusterEntries = processQueueClient.query(status, cfg.getMaxSize(), flavor, "clusterAlias", clusterAlias);
+        if (logicalClusterAlias == null || clusterAlias.equals(logicalClusterAlias)) {
+            return clusterEntries;
+        }
+
+        List<ProcessQueueEntry> logicalEntries = processQueueClient.query(status, cfg.getMaxSize(), flavor, "logicalClusterAlias", logicalClusterAlias);
+        List<ProcessQueueEntry> result = new ArrayList<>(clusterEntries);
+        result.addAll(logicalEntries);
+        return result;
     }
 }
