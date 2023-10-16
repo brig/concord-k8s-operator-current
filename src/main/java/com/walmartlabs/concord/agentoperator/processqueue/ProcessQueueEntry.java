@@ -26,17 +26,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProcessQueueEntry implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private final UUID instanceId;
+
     private final Map<String, Object> requirements;
 
     @JsonCreator
-    public ProcessQueueEntry(@JsonProperty("requirements") Map<String, Object> requirements) {
+    public ProcessQueueEntry(@JsonProperty("instanceId") UUID instanceId,
+                             @JsonProperty("requirements") Map<String, Object> requirements) {
+        this.instanceId = instanceId;
         this.requirements = requirements;
+    }
+
+    public UUID getInstanceId() {
+        return instanceId;
     }
 
     public Map<String, Object> getRequirements() {
@@ -46,7 +55,8 @@ public class ProcessQueueEntry implements Serializable {
     @Override
     public String toString() {
         return "ProcessQueueEntry{" +
-                "requirements=" + requirements +
+                "instanceId=" + instanceId +
+                ", requirements=" + requirements +
                 '}';
     }
 }

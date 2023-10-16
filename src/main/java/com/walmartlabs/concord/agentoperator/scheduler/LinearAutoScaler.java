@@ -127,13 +127,17 @@ public class LinearAutoScaler implements AutoScaler {
     // TODO: we need endpoint where we can put query filters..
     private List<ProcessQueueEntry> query(String status, AgentPoolConfiguration cfg, String flavor, String clusterAlias, String logicalClusterAlias) throws IOException {
         List<ProcessQueueEntry> clusterEntries = processQueueClient.query(status, cfg.getMaxSize(), flavor, "clusterAlias", clusterAlias);
-        if (logicalClusterAlias == null || clusterAlias.equals(logicalClusterAlias)) {
-            return clusterEntries;
-        }
-
         List<ProcessQueueEntry> logicalEntries = processQueueClient.query(status, cfg.getMaxSize(), flavor, "logicalClusterAlias", logicalClusterAlias);
         List<ProcessQueueEntry> result = new ArrayList<>(clusterEntries);
-        result.addAll(logicalEntries);
+        for (ProcessQueueEntry e : logicalEntries) {
+            if (!contains(e, result)) {
+                result.add(e);
+            }
+        }
         return result;
+    }
+
+    private boolean contains(ProcessQueueEntry e, List<ProcessQueueEntry> result) {
+        return result.stream().anyMatch(r -> r.getInstanceId().equals(e.getInstanceId()));
     }
 }

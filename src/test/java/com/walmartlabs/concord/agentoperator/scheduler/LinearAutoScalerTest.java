@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,7 +84,7 @@ public class LinearAutoScalerTest {
         assertEquals(0, pool.getTargetSize());
 
         // 1 enqueued process -> inc pods count
-        queue.add(new ProcessQueueEntry(Collections.singletonMap("test", 123)));
+        queue.add(new ProcessQueueEntry(UUID.randomUUID(), Collections.singletonMap("test", 123)));
 
         pool = as.apply(pool);
         assertEquals(1, pool.getTargetSize());
@@ -111,7 +112,7 @@ public class LinearAutoScalerTest {
         AtomicInteger podCount = new AtomicInteger(1);
         List<ProcessQueueEntry> queue = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            queue.add(new ProcessQueueEntry(Collections.singletonMap("test", 123)));
+            queue.add(new ProcessQueueEntry(UUID.randomUUID(), Collections.singletonMap("test", 123)));
         }
 
         DefaultAutoScaler as = new DefaultAutoScaler(mockProcessQueueClient(queue), n -> podCount.get(), i -> true, i -> true);
