@@ -76,7 +76,7 @@ public class Operator {
         });
     }
 
-    private static final Event.Type actionToEvent(Watcher.Action action) {
+    private static Event.Type actionToEvent(Watcher.Action action) {
         switch (action) {
             case ADDED:
             case MODIFIED: {

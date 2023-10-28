@@ -50,13 +50,13 @@ public class ProcessQueueClient {
         this.objectMapper = new ObjectMapper();
     }
 
-    public List<ProcessQueueEntry> query(String processStatus, int limit, String flavor, String filterName, String filterValue) throws IOException {
+    public List<ProcessQueueEntry> query(String processStatus, int limit, String flavor, String clusterAlias) throws IOException {
         String queryUrl = baseUrl + "/api/v2/process/requirements?status=" + processStatus + "&limit=" + limit + "&startAt.len=";
         if (flavor != null) {
             queryUrl = queryUrl + "&requirements.agent.flavor.eq=" + flavor;
         }
-        if (filterName != null && filterValue != null) {
-            queryUrl = queryUrl + "&requirements.agent." + filterName + ".eq=" + filterValue;
+        if (clusterAlias != null) {
+            queryUrl = queryUrl + "&requirements.agent.clusterAlias.rm=" + clusterAlias;
         }
         Request req = new Request.Builder()
                 .url(queryUrl)

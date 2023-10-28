@@ -88,7 +88,7 @@ public class DefaultAutoScaler implements AutoScaler {
         int queueQueryLimit = i.getResource().getSpec().getQueueQueryLimit();
         Map<String, Object> queueSelector = i.getResource().getSpec().getQueueSelector();
         String flavor = (String) ConfigurationUtils.get(queueSelector, "agent", "flavor");
-        List<ProcessQueueEntry> queueEntries = processQueueClient.query("ENQUEUED", queueQueryLimit, flavor, null, null);
+        List<ProcessQueueEntry> queueEntries = processQueueClient.query("ENQUEUED", queueQueryLimit, flavor, null);
 
         scaleUpTimeStamp = i.getLastScaleUpTimestamp();
         scaleDownTimeStamp = i.getLastScaleDownTimeStamp();

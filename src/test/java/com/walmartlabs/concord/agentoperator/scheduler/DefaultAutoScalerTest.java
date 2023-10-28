@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -98,7 +97,7 @@ public class DefaultAutoScalerTest {
     private ProcessQueueClient mockProcessQueueClient(List<ProcessQueueEntry> queue) {
         return new ProcessQueueClient("test", "test") {
             @Override
-            public List<ProcessQueueEntry> query(String processStatus, int limit, String flavor, String filterName, String filterValue) throws IOException {
+            public List<ProcessQueueEntry> query(String processStatus, int limit, String flavor, String clusterAlias) throws IOException {
                 return queue;
             }
         };
@@ -109,7 +108,7 @@ public class DefaultAutoScalerTest {
         AtomicInteger podCount = new AtomicInteger(1);
         List<ProcessQueueEntry> queue = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            queue.add(new ProcessQueueEntry(UUID.randomUUID(), Collections.singletonMap("test", 123)));
+            queue.add(new ProcessQueueEntry(Collections.singletonMap("test", 123)));
         }
 
         DefaultAutoScaler as = new DefaultAutoScaler(mockProcessQueueClient(queue), n -> podCount.get(), i -> true, i -> true);
