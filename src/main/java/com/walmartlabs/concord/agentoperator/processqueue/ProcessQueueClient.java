@@ -56,7 +56,7 @@ public class ProcessQueueClient {
             queryUrl = queryUrl + "&requirements.agent.flavor.eq=" + flavor;
         }
         if (clusterAlias != null) {
-            queryUrl = queryUrl + "&requirements.agent.clusterAlias.rm=" + clusterAlias;
+            queryUrl = queryUrl + "&requirements.agent.clusterAlias.regexp=" + clusterAlias;
         }
         Request req = new Request.Builder()
                 .url(queryUrl)
