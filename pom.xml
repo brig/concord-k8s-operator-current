@@ -15,7 +15,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <concord.version>1.103.0</concord.version>
+        <concord.version>2.10.1</concord.version>
+        <logback.version>1.4.12</logback.version>
+        <kubernetes.version>5.12.4</kubernetes.version>
+        <slf4j.api.version>2.0.7</slf4j.api.version>
+        <guava.version>33.1.0-jre</guava.version>
+        <errorproneannotations.version>2.26.1</errorproneannotations.version>
     </properties>
 
     <dependencies>
@@ -36,22 +41,27 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
+            <version>${kubernetes.version}</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-model</artifactId>
+            <version>${kubernetes.version}</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-model-apiextensions</artifactId>
+            <version>${kubernetes.version}</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-model-core</artifactId>
+            <version>${kubernetes.version}</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-model-common</artifactId>
+            <version>${kubernetes.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
@@ -75,20 +85,30 @@
             <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.api.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_annotations</artifactId>
+            <version>${errorproneannotations.version}</version>
         </dependency>
 
         <!-- JDK9 compatibility -->

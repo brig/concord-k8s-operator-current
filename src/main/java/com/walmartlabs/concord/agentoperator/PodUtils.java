@@ -105,10 +105,6 @@ public final class PodUtils {
         private final CountDownLatch latch = new CountDownLatch(1);
 
         @Override
-        public void onOpen(Response response) {
-        }
-
-        @Override
         public void onFailure(Throwable t, Response response) {
             latch.countDown();
         }
