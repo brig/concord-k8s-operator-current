@@ -69,7 +69,9 @@ public class ProcessQueueClient {
              ResponseBody body = resp.body()) {
 
             if (!resp.isSuccessful()) {
-                throw new IOException("Error while fetching the process queue data: " + resp.code() + "\n resp: " + (body != null ? body.string(): "n/a"));
+                throw new IOException("Error while fetching the process queue data: " + resp.code() +
+                        "\n resp: " + (body != null ? body.string(): "n/a") +
+                        "\n query: " + queryUrl);
             }
 
             if (body == null) {
