@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <concord.version>2.10.1</concord.version>
+        <concord.version>2.13.0</concord.version>
         <logback.version>1.4.12</logback.version>
         <kubernetes.version>5.12.4</kubernetes.version>
         <slf4j.api.version>2.0.7</slf4j.api.version>

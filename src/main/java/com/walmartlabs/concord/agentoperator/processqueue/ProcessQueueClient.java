@@ -65,12 +65,13 @@ public class ProcessQueueClient {
                 .build();
 
         Call call = client.newCall(req);
-        try (Response resp = call.execute()) {
+        try (Response resp = call.execute();
+             ResponseBody body = resp.body()) {
+
             if (!resp.isSuccessful()) {
-                throw new IOException("Error while fetching the process queue data: " + resp.code());
+                throw new IOException("Error while fetching the process queue data: " + resp.code() + "\n resp: " + (body != null ? body.string(): "n/a"));
             }
 
-            ResponseBody body = resp.body();
             if (body == null) {
                 throw new IOException("Error while fetching the process queue data: empty response");
             }
