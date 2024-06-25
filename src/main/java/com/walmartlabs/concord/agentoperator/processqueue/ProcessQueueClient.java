@@ -29,9 +29,11 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.net.URLEncoder;
 
 public class ProcessQueueClient {
 
@@ -56,7 +58,7 @@ public class ProcessQueueClient {
             queryUrl = queryUrl + "&requirements.agent.flavor.eq=" + flavor;
         }
         if (clusterAlias != null) {
-            queryUrl = queryUrl + "&requirements.agent.clusterAlias.regexp=" + clusterAlias;
+            queryUrl = queryUrl + "&requirements.agent.clusterAlias.regexp=" + URLEncoder.encode(clusterAlias, StandardCharsets.UTF_8);
         }
         Request req = new Request.Builder()
                 .url(queryUrl)
