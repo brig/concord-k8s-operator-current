@@ -20,24 +20,36 @@ package com.walmartlabs.concord.agentoperator.planner;
  * =====
  */
 
+import com.walmartlabs.concord.agentoperator.AgentClient;
 import com.walmartlabs.concord.agentoperator.PodUtils;
 import com.walmartlabs.concord.agentoperator.resources.AgentPod;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TagForRemovalChange implements Change {
 
-    private final String podName;
+    private static final Logger log = LoggerFactory.getLogger(TagForRemovalChange.class);
 
-    public TagForRemovalChange(String podName) {
+    private final String podName;
+    private final String podIp;
+    private final AgentClient agentClient;
+
+    public TagForRemovalChange(String podName, AgentClient agentClient, String podIp) {
         this.podName = podName;
+        this.podIp = podIp;
+        this.agentClient = agentClient;
     }
 
     @Override
     public void apply(KubernetesClient client) {
-        apply(client, podName);
-    }
+        try {
+            agentClient.enableMaintenanceMode(podIp);
+        } catch (Exception e) {
+            log.error("Error while maintenance mode for pod '{}'@'{}'", podName, podIp, e);
+            return;
+        }
 
-    public static void apply(KubernetesClient client, String podName) {
         PodUtils.applyTag(client, podName, AgentPod.TAGGED_FOR_REMOVAL_LABEL, "true");
     }
 
