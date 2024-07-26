@@ -45,6 +45,7 @@ public class TagForRemovalChange implements Change {
     public void apply(KubernetesClient client) {
         try {
             agentClient.enableMaintenanceMode(podIp);
+            log.info("Maintenance mode for pod '{}'@'{}' enabled", podName, podIp);
         } catch (Exception e) {
             log.error("Error while maintenance mode for pod '{}'@'{}'", podName, podIp, e);
             return;

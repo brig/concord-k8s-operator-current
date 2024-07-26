@@ -98,7 +98,7 @@ public class LinearAutoScaler implements AutoScaler {
 
         int targetSize = Math.max(cfg.getMinSize(), podsCount + increment);
         if (i.getTargetSize() == targetSize) {
-            log.info("apply ['{}'] -> targetSize = {}, enqueuedCount = {}, increment = {}, podsCount = {}", i.getName(), targetSize, enqueuedCount, increment, podsCount);
+            log.info("apply ['{}'] -> targetSize = {}, enqueuedCount = {}, increment = {}, podsCount = {}, freePodsCount = {}", i.getName(), targetSize, enqueuedCount, increment, podsCount, freePodsCount);
             // no changes needed
             return i;
         }
