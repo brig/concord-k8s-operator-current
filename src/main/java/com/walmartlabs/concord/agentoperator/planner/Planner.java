@@ -64,7 +64,7 @@ public class Planner {
 
         List<Pod> pods = AgentPod.list(client, resourceName);;
         int currentSize = pods.stream()
-                .filter(p -> p.getMetadata().getLabels().containsKey(AgentPod.TAGGED_FOR_REMOVAL_LABEL))
+                .filter(p -> !p.getMetadata().getLabels().containsKey(AgentPod.TAGGED_FOR_REMOVAL_LABEL))
                 .toList().size();
 
         // hash of the Agent Pod configuration, will be used to determine which resources should be updated
