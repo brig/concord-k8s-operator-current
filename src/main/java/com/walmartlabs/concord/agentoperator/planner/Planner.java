@@ -62,10 +62,10 @@ public class Planner {
                 .getItems()
                 .forEach(p -> changes.add(new TryToDeletePodChange(p.getMetadata().getName(), agentClient, p.getStatus().getPodIP())));
 
-        List<Pod> pods = AgentPod.list(client, resourceName).stream()
+        List<Pod> pods = AgentPod.list(client, resourceName);;
+        int currentSize = pods.stream()
                 .filter(p -> p.getMetadata().getLabels().containsKey(AgentPod.TAGGED_FOR_REMOVAL_LABEL))
-                .toList();
-        int currentSize = pods.size();
+                .toList().size();
 
         // hash of the Agent Pod configuration, will be used to determine which resources should be updated
         String newHash = HashUtils.hashAsHexString(poolInstance.getResource().getSpec().getPod());
@@ -147,6 +147,10 @@ public class Planner {
         if (currentSize > targetSize) {
             int podsToDelete = currentSize - targetSize;
             for (Pod pod : pods) {
+                if (pod.getMetadata().getLabels().containsKey(AgentPod.TAGGED_FOR_REMOVAL_LABEL)) {
+                    continue;
+                }
+
                 String podName = pod.getMetadata().getName();
                 String podIp = pod.getStatus().getPodIP();
                 changes.add(new TagForRemovalChange(podName, agentClient, podIp));
