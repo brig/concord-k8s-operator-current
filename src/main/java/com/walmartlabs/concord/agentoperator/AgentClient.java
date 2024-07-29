@@ -28,6 +28,10 @@ public class AgentClient {
     }
 
     public void enableMaintenanceMode(String podIp) throws Exception {
+        if (podIp == null) {
+            return;
+        }
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI("http://%s:8010/maintenance-mode".formatted(podIp)))
                 .POST(HttpRequest.BodyPublishers.noBody())
@@ -38,6 +42,10 @@ public class AgentClient {
     }
 
     public boolean isNoWorkers(String podIp) throws Exception {
+        if (podIp == null) {
+            return true;
+        }
+        
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI("http://%s:8010/maintenance-mode".formatted(podIp)))
                 .GET()
