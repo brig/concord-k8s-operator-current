@@ -18,7 +18,7 @@ public class MonitoringClientFactory {
             return new NopMonitoringClient();
         } else {
             log.info("using DefaultMonitoringClient");
-            return new DefaultMonitoringClient(baseUrl, apiToken, namespace, orgName, storeName, clusterAlias, version);
+            return new DefaultMonitoringClient(baseUrl, apiToken, orgName, storeName, clusterAlias, namespace, version);
         }
     }
 
