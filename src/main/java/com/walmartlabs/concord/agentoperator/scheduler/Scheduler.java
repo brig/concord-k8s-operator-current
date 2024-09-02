@@ -20,6 +20,8 @@ package com.walmartlabs.concord.agentoperator.scheduler;
  * =====
  */
 
+import com.walmartlabs.concord.agentoperator.AgentClient;
+import com.walmartlabs.concord.agentoperator.monitoring.MonitoringClient;
 import com.walmartlabs.concord.agentoperator.crd.AgentPool;
 import com.walmartlabs.concord.agentoperator.planner.Change;
 import com.walmartlabs.concord.agentoperator.planner.Planner;
@@ -44,10 +46,12 @@ public class Scheduler {
     private final Planner planner;
     private final Map<String, AgentPoolInstance> pools;
     private final List<Event> events;
+    private final MonitoringClient monitoringClient;
 
-    public Scheduler(AutoScalerFactory autoScalerFactory, KubernetesClient k8sClient) {
+    public Scheduler(AutoScalerFactory autoScalerFactory, KubernetesClient k8sClient, MonitoringClient monitoringClient) {
         this.autoScalerFactory = autoScalerFactory;
         this.k8sClient = k8sClient;
+        this.monitoringClient = monitoringClient;
         this.planner = new Planner(k8sClient);
         this.pools = new HashMap<>();
         this.events = new LinkedList<>();
@@ -132,6 +136,8 @@ public class Scheduler {
             pools.put(resourceName, new AgentPoolInstance(resourceName, resource, AgentPoolInstance.Status.ACTIVE,
                     targetSize, currentTimeStamp, currentTimeStamp, currentTimeStamp));
         }
+
+        monitoringClient.onAgentPoolAdded(resourceName, resource);
     }
 
     private void onDelete(String resourceName) {
@@ -143,6 +149,8 @@ public class Scheduler {
 
             pools.put(resourceName, AgentPoolInstance.updateStatus(i, AgentPoolInstance.Status.DELETED));
         }
+
+        monitoringClient.onAgentPoolDeleted(resourceName);
     }
 
     private AgentPoolInstance updateTargetSize(AgentPoolInstance i) throws IOException {
