@@ -83,4 +83,15 @@ public class AgentPoolInstance {
         ACTIVE,
         DELETED
     }
+
+    @Override
+    public String toString() {
+        return "AgentPoolInstance{" +
+                "name='" + name + '\'' +
+                ", targetSize=" + targetSize +
+                ", lastUpdateTimestamp=" + lastUpdateTimestamp +
+                ", lastScaleUpTimestamp=" + lastScaleUpTimestamp +
+                ", lastScaleDownTimeStamp=" + lastScaleDownTimeStamp +
+                '}';
+    }
 }
