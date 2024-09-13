@@ -63,7 +63,7 @@ public class Operator {
         Scheduler.Configuration cfg = new Scheduler.Configuration(baseUrl, apiToken);
         AutoScalerFactory autoScalerFactory = new AutoScalerFactory(cfg, client);
         AgentClientFactory agentClientFactory = new AgentClientFactory(true);
-        Scheduler scheduler = new Scheduler(autoScalerFactory, client, agentClientFactory);
+        Scheduler scheduler = new Scheduler(autoScalerFactory, client, monitoringClient, agentClientFactory);
         scheduler.start();
 
         // TODO retries
