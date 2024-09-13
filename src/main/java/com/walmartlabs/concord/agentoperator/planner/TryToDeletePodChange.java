@@ -20,7 +20,7 @@ package com.walmartlabs.concord.agentoperator.planner;
  * =====
  */
 
-import com.walmartlabs.concord.agentoperator.AgentClient;
+import com.walmartlabs.concord.agentoperator.agent.AgentClient;
 import com.walmartlabs.concord.agentoperator.PodUtils;
 import com.walmartlabs.concord.agentoperator.resources.AgentPod;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -35,12 +35,10 @@ public class TryToDeletePodChange implements Change {
     private static final Logger log = LoggerFactory.getLogger(TryToDeletePodChange.class);
 
     private final String podName;
-    private final String podIp;
     private final AgentClient agentClient;
 
-    public TryToDeletePodChange(String podName, AgentClient agentClient, String podIp) {
+    public TryToDeletePodChange(String podName, AgentClient agentClient) {
         this.podName = podName;
-        this.podIp = podIp;
         this.agentClient = agentClient;
     }
 
@@ -75,16 +73,16 @@ public class TryToDeletePodChange implements Change {
         Map<String, String> labels = pod.getMetadata().getLabels();
 
         if ("true".equals(labels.getOrDefault(AgentPod.PRE_STOP_HOOK_TERMINATION_LABEL, "false"))) {
-            log.warn("['{}'] -> has been marked for termination. Waiting for running process to complete ...", podName);
+            log.warn("['{}'] -> has been marked for termination", podName);
             return;
         }
 
         try {
-            if (!agentClient.isNoWorkers(podIp)) {
+            if (agentClient.hasBusyWorkers()) {
                 return;
             }
         } catch (Exception e) {
-            log.error("Error while checking agent workers count for pod ['{}', '{}']", podName, podIp, e);
+            log.error("Error while checking agent workers count for pod '{}'", podName, e);
             return;
         }
 

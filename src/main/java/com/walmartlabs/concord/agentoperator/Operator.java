@@ -21,6 +21,7 @@ package com.walmartlabs.concord.agentoperator;
  */
 
 
+import com.walmartlabs.concord.agentoperator.agent.AgentClientFactory;
 import com.walmartlabs.concord.agentoperator.crd.AgentPool;
 import com.walmartlabs.concord.agentoperator.crd.AgentPoolList;
 import com.walmartlabs.concord.agentoperator.monitoring.MonitoringClient;
@@ -61,7 +62,8 @@ public class Operator {
         // TODO use secrets for the token?
         Scheduler.Configuration cfg = new Scheduler.Configuration(baseUrl, apiToken);
         AutoScalerFactory autoScalerFactory = new AutoScalerFactory(cfg, client);
-        Scheduler scheduler = new Scheduler(autoScalerFactory, client, monitoringClient);
+        AgentClientFactory agentClientFactory = new AgentClientFactory(true);
+        Scheduler scheduler = new Scheduler(autoScalerFactory, client, agentClientFactory);
         scheduler.start();
 
         // TODO retries

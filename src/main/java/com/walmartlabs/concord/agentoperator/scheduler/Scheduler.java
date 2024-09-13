@@ -20,8 +20,7 @@ package com.walmartlabs.concord.agentoperator.scheduler;
  * =====
  */
 
-import com.walmartlabs.concord.agentoperator.AgentClient;
-import com.walmartlabs.concord.agentoperator.AgentClient;
+import com.walmartlabs.concord.agentoperator.agent.AgentClientFactory;
 import com.walmartlabs.concord.agentoperator.monitoring.MonitoringClient;
 import com.walmartlabs.concord.agentoperator.crd.AgentPool;
 import com.walmartlabs.concord.agentoperator.planner.Change;
@@ -49,11 +48,11 @@ public class Scheduler {
     private final List<Event> events;
     private final MonitoringClient monitoringClient;
 
-    public Scheduler(AutoScalerFactory autoScalerFactory, KubernetesClient k8sClient, MonitoringClient monitoringClient) {
+    public Scheduler(AutoScalerFactory autoScalerFactory, KubernetesClient k8sClient, MonitoringClient monitoringClient, AgentClientFactory agentClientFactory) {
         this.autoScalerFactory = autoScalerFactory;
         this.k8sClient = k8sClient;
         this.monitoringClient = monitoringClient;
-        this.planner = new Planner(k8sClient, new AgentClient());
+        this.planner = new Planner(k8sClient, agentClientFactory);
         this.pools = new HashMap<>();
         this.events = new LinkedList<>();
     }
