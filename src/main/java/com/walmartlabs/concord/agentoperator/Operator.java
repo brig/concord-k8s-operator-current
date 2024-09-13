@@ -23,6 +23,8 @@ package com.walmartlabs.concord.agentoperator;
 
 import com.walmartlabs.concord.agentoperator.crd.AgentPool;
 import com.walmartlabs.concord.agentoperator.crd.AgentPoolList;
+import com.walmartlabs.concord.agentoperator.monitoring.MonitoringClient;
+import com.walmartlabs.concord.agentoperator.monitoring.MonitoringClientFactory;
 import com.walmartlabs.concord.agentoperator.scheduler.AutoScalerFactory;
 import com.walmartlabs.concord.agentoperator.scheduler.Event;
 import com.walmartlabs.concord.agentoperator.scheduler.Scheduler;
@@ -53,10 +55,13 @@ public class Operator {
         String baseUrl = getEnv("CONCORD_BASE_URL", "http://192.168.99.1:8001"); // use minikube/vbox host's default address
         String apiToken = getEnv("CONCORD_API_TOKEN", null);
 
+        MonitoringClient monitoringClient = MonitoringClientFactory.create(baseUrl, apiToken, namespace);
+        monitoringClient.onStart();
+
         // TODO use secrets for the token?
         Scheduler.Configuration cfg = new Scheduler.Configuration(baseUrl, apiToken);
         AutoScalerFactory autoScalerFactory = new AutoScalerFactory(cfg, client);
-        Scheduler scheduler = new Scheduler(autoScalerFactory, client);
+        Scheduler scheduler = new Scheduler(autoScalerFactory, client, monitoringClient);
         scheduler.start();
 
         // TODO retries

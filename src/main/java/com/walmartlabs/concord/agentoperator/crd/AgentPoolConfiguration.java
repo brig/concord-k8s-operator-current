@@ -97,7 +97,6 @@ public class AgentPoolConfiguration implements Serializable {
     private Map<String, Object> queueSelector;
     private ConfigMap configMap;
 
-
     private Pod pod;
 
     public boolean isAutoScale() {

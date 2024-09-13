@@ -45,7 +45,7 @@ public class AgentClient {
         if (podIp == null) {
             return true;
         }
-        
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI("http://%s:8010/maintenance-mode".formatted(podIp)))
                 .GET()
