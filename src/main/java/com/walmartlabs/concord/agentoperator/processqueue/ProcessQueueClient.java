@@ -22,6 +22,7 @@ package com.walmartlabs.concord.agentoperator.processqueue;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmartlabs.concord.sdk.Constants;
 import okhttp3.*;
 
 import javax.net.ssl.SSLContext;
@@ -63,6 +64,7 @@ public class ProcessQueueClient {
         Request req = new Request.Builder()
                 .url(queryUrl)
                 .header("Authorization", apiToken)
+                .header(Constants.Headers.ENABLE_HTTP_SESSION, "true")
                 .addHeader("User-Agent", "k8s-agent-operator")
                 .build();
 
