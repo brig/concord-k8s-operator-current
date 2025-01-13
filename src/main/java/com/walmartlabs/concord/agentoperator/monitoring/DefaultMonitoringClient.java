@@ -10,7 +10,6 @@ import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -155,9 +154,7 @@ public class DefaultMonitoringClient implements MonitoringClient {
                 if (e.getCode() >= 400 && e.getCode() < 500) {
                     break;
                 }
-                log.warn("call error: '{}'", e.getResponseBody());
-            } catch (ClosedChannelException e) {
-                log.error("call error: closed channel");
+                log.warn("call error: '{}'",e.getResponseBody());
             } catch (Exception e) {
                 log.error("call error", e);
             }
