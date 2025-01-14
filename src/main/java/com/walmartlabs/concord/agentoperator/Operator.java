@@ -29,10 +29,7 @@ import com.walmartlabs.concord.agentoperator.monitoring.MonitoringClientFactory;
 import com.walmartlabs.concord.agentoperator.scheduler.AutoScalerFactory;
 import com.walmartlabs.concord.agentoperator.scheduler.Event;
 import com.walmartlabs.concord.agentoperator.scheduler.Scheduler;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.Watcher;
-import io.fabric8.kubernetes.client.WatcherException;
+import io.fabric8.kubernetes.client.*;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import org.slf4j.Logger;
@@ -85,8 +82,6 @@ public class Operator {
         } catch (Exception e) {
             log.error("Watch exception", e);
             System.exit(2);
-        } finally {
-            scheduler.stop();
         }
     }
 
