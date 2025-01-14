@@ -241,26 +241,4 @@ public class AgentPoolConfiguration implements Serializable {
         String envValue = System.getenv(key);
         return envValue != null ? envValue : defaultValue;
     }
-
-    @Override
-    public String toString() {
-        return "AgentPoolConfiguration{" +
-                "autoScale=" + autoScale +
-                ", maxSize=" + maxSize +
-                ", minSize=" + minSize +
-                ", size=" + size +
-                ", autoScaleStrategy='" + autoScaleStrategy + '\'' +
-                ", sizeIncrement=" + sizeIncrement +
-                ", queueQueryLimit=" + queueQueryLimit +
-                ", scaleUpDelayMs=" + scaleUpDelayMs +
-                ", scaleDownDelayMs=" + scaleDownDelayMs +
-                ", percentIncrement=" + percentIncrement +
-                ", percentDecrement=" + percentDecrement +
-                ", incrementThresholdFactor=" + incrementThresholdFactor +
-                ", decrementThresholdFactor=" + decrementThresholdFactor +
-                ", queueSelector=" + queueSelector +
-                ", configMap=" + configMap +
-                ", pod=" + pod +
-                '}';
-    }
 }
