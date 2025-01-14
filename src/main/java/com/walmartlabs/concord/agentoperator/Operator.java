@@ -70,17 +70,24 @@ public class Operator {
         log.info("main -> my watch begins... (namespace={})", namespace);
 
         NonNamespaceOperation<AgentPool, AgentPoolList, Resource<AgentPool>> dummyClient = client.resources(AgentPool.class, AgentPoolList.class);
-        dummyClient.watch(new Watcher<>() {
-            @Override
-            public void eventReceived(Action action, AgentPool resource) {
-                scheduler.onEvent(actionToEvent(action), resource);
-            }
+        try {
+            dummyClient.watch(new Watcher<>() {
+                @Override
+                public void eventReceived(Action action, AgentPool resource) {
+                    scheduler.onEvent(actionToEvent(action), resource);
+                }
 
-            @Override
-            public void onClose(WatcherException we) {
-                log.error("Watcher exception  {}", we.getMessage(), we);
-            }
-        });
+                @Override
+                public void onClose(WatcherException we) {
+                    log.error("Watcher exception  {}", we.getMessage(), we);
+                }
+            });
+        } catch (Exception e) {
+            log.error("Watch exception", e);
+            System.exit(2);
+        } finally {
+            scheduler.stop();
+        }
     }
 
     private static Event.Type actionToEvent(Watcher.Action action) {
