@@ -36,8 +36,7 @@ public class DeleteConfigMapChange implements Change {
 
     @Override
     public void apply(KubernetesClient client) {
-        var result = client.configMaps().withName(configMapName).delete();
-        if (!result.isEmpty()) {
+        if (client.configMaps().withName(configMapName).delete()) {
             // wait till it's actually removed
             while (client.configMaps().withName(configMapName).get() != null) {
                 try {
