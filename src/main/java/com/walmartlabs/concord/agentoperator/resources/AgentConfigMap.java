@@ -23,20 +23,15 @@ package com.walmartlabs.concord.agentoperator.resources;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmartlabs.concord.agentoperator.HashUtils;
-import com.walmartlabs.concord.agentoperator.Operator;
 import com.walmartlabs.concord.agentoperator.crd.AgentPoolConfiguration;
 import com.walmartlabs.concord.agentoperator.scheduler.AgentPoolInstance;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 public final class AgentConfigMap {
-
-    private static final Logger log = LoggerFactory.getLogger(AgentConfigMap.class);
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -46,10 +41,6 @@ public final class AgentConfigMap {
 
     public static void create(KubernetesClient client, AgentPoolInstance poolInstance, String configMapName) throws IOException {
         ConfigMap m = prepare(client, poolInstance, configMapName);
-
-        log.info("create {}", m);
-        log.info("create metadata {}", m.getMetadata());
-        log.info("create name {}", m.getMetadata().getName());
 
         client.configMaps().resource(m).create();
     }
@@ -65,11 +56,6 @@ public final class AgentConfigMap {
 
     private static ConfigMap prepare(KubernetesClient client, AgentPoolInstance poolInstance, String configMapName) throws IOException {
         AgentPoolConfiguration spec = poolInstance.getResource().getSpec();
-
-        log.info("prepare {}", spec);
-        log.info("prepare meta {}", spec.getConfigMap().getMetadata());
-        log.info("prepare meta {}", spec.getConfigMap().getMetadata().getName());
-        log.info("prepare as string {}", objectMapper.writeValueAsString(spec.getConfigMap()));
 
         String configMapYaml = objectMapper.writeValueAsString(spec.getConfigMap())
                 .replaceAll("%%configMapName%%", configMapName)
