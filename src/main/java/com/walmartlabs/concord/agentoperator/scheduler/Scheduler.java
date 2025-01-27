@@ -58,6 +58,7 @@ public class Scheduler {
     }
 
     public void onEvent(Event.Type type, AgentPool resource) {
+        log.info("onEvent [type={}, resource={}]", type, resource);
         synchronized (events) {
             events.add(new Event(type, resource));
         }
@@ -124,7 +125,7 @@ public class Scheduler {
                         throw new IllegalArgumentException("Unknown pool status: " + i.getStatus());
                 }
             } catch (IOException e) {
-                log.error("doRun -> error while processing a registered pool {}: {}", i.getName(), e.getMessage());
+                log.error("doRun -> error while processing a registered pool {}: {}", i.getName(), e.getMessage(), e);
             }
         });
     }

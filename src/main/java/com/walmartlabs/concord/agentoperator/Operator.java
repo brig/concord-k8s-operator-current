@@ -67,10 +67,12 @@ public class Operator {
         log.info("main -> my watch begins... (namespace={})", namespace);
 
         NonNamespaceOperation<AgentPool, AgentPoolList, Resource<AgentPool>> dummyClient = client.resources(AgentPool.class, AgentPoolList.class);
+
         try {
             dummyClient.watch(new Watcher<>() {
                 @Override
                 public void eventReceived(Action action, AgentPool resource) {
+
                     scheduler.onEvent(actionToEvent(action), resource);
                 }
 
