@@ -39,6 +39,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.time.Duration;
 import java.util.List;
 import java.net.URLEncoder;
 
@@ -73,6 +74,7 @@ public class ProcessQueueClient {
                 .header("Authorization", apiToken)
                 .header("User-Agent", "k8s-agent-operator")
                 .header(Constants.Headers.ENABLE_HTTP_SESSION, "true")
+                .timeout(Duration.ofSeconds(30))
                 .GET()
                 .build();
 
@@ -90,7 +92,6 @@ public class ProcessQueueClient {
 
         return objectMapper.readValue(response.body(), LIST_OF_PROCESS_QUEUE_ENTRIES);
     }
-
 
     private static HttpClient initClient() {
         try {
@@ -115,6 +116,8 @@ public class ProcessQueueClient {
             cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
 
             return HttpClient.newBuilder()
+                    .version(HttpClient.Version.HTTP_1_1)
+                    .connectTimeout(Duration.ofSeconds(30))
                     .sslContext(sslContext)
                     .cookieHandler(cookieManager)
                     .build();
