@@ -69,19 +69,20 @@ public class Operator {
 
                     @Override
                     public void onAdd(AgentPool resource) {
-                        System.out.println("onAdd");
                         executor.submit(() -> scheduler.onEvent(MODIFIED, resource));
                     }
 
                     @Override
                     public void onUpdate(AgentPool oldResource, AgentPool newResource) {
-                        System.out.println("onUpdate");
+                        if (oldResource == newResource) {
+                            return;
+                        }
+                        
                         executor.submit(() -> scheduler.onEvent(MODIFIED, newResource));
                     }
 
                     @Override
                     public void onDelete(AgentPool resource, boolean deletedFinalStateUnknown) {
-                        System.out.println("onDelete");
                         executor.submit(() -> scheduler.onEvent(DELETED, resource));
                     }
                 }, 5 * 1000L);
