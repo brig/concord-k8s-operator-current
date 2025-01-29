@@ -24,16 +24,18 @@ package com.walmartlabs.concord.agentoperator;
 import com.walmartlabs.concord.agentoperator.agent.AgentClientFactory;
 import com.walmartlabs.concord.agentoperator.crd.AgentPool;
 import com.walmartlabs.concord.agentoperator.crd.AgentPoolList;
-import com.walmartlabs.concord.agentoperator.monitoring.MonitoringClient;
 import com.walmartlabs.concord.agentoperator.monitoring.MonitoringClientFactory;
 import com.walmartlabs.concord.agentoperator.scheduler.AutoScalerFactory;
-import com.walmartlabs.concord.agentoperator.scheduler.Event;
 import com.walmartlabs.concord.agentoperator.scheduler.Scheduler;
 import io.fabric8.kubernetes.client.*;
-import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
-import io.fabric8.kubernetes.client.dsl.Resource;
+import io.fabric8.kubernetes.client.informers.ResourceEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Executors;
+
+import static com.walmartlabs.concord.agentoperator.scheduler.Event.Type.DELETED;
+import static com.walmartlabs.concord.agentoperator.scheduler.Event.Type.MODIFIED;
 
 public class Operator {
 
@@ -42,62 +44,54 @@ public class Operator {
     public static void main(String[] args) {
         // TODO support overloading the CRD with an external file?
 
-        String namespace = System.getenv("WATCH_NAMESPACE");
-        if (namespace == null) {
-            namespace = "default";
-        }
+        var namespace = getEnv("WATCH_NAMESPACE", "default");
 
-        KubernetesClient client = new DefaultKubernetesClient() // NOSONAR
-                .inNamespace(namespace);
+        var baseUrl = getEnv("CONCORD_BASE_URL", "http://192.168.99.1:8001"); // use minikube/vbox host's default address
+        var apiToken = getEnv("CONCORD_API_TOKEN", null);
 
-        String baseUrl = getEnv("CONCORD_BASE_URL", "http://192.168.99.1:8001"); // use minikube/vbox host's default address
-        String apiToken = getEnv("CONCORD_API_TOKEN", null);
-
-        MonitoringClient monitoringClient = MonitoringClientFactory.create(baseUrl, apiToken, namespace);
+        var monitoringClient = MonitoringClientFactory.create(baseUrl, apiToken, namespace);
         monitoringClient.onStart();
 
         // TODO use secrets for the token?
-        Scheduler.Configuration cfg = new Scheduler.Configuration(baseUrl, apiToken);
-        AutoScalerFactory autoScalerFactory = new AutoScalerFactory(cfg, client);
-        AgentClientFactory agentClientFactory = new AgentClientFactory(true);
-        Scheduler scheduler = new Scheduler(autoScalerFactory, client, monitoringClient, agentClientFactory);
+        var cfg = new Scheduler.Configuration(baseUrl, apiToken);
+        var client = new DefaultKubernetesClient().inNamespace(namespace);
+        var autoScalerFactory = new AutoScalerFactory(cfg, client);
+        var agentClientFactory = new AgentClientFactory(true);
+        var executor = Executors.newCachedThreadPool();
+
+        var scheduler = new Scheduler(autoScalerFactory, client, monitoringClient, agentClientFactory);
         scheduler.start();
 
         // TODO retries
         log.info("main -> my watch begins... (namespace={})", namespace);
+        var informer = client.resources(AgentPool.class, AgentPoolList.class).inAnyNamespace()
+                .inform(new ResourceEventHandler<>() {
 
-        NonNamespaceOperation<AgentPool, AgentPoolList, Resource<AgentPool>> dummyClient = client.resources(AgentPool.class, AgentPoolList.class);
+                    @Override
+                    public void onAdd(AgentPool resource) {
+                        executor.submit(() -> scheduler.onEvent(MODIFIED, resource));
+                    }
+
+                    @Override
+                    public void onUpdate(AgentPool oldResource, AgentPool newResource) {
+                        if (oldResource == newResource) {
+                            return;
+                        }
+                        
+                        executor.submit(() -> scheduler.onEvent(MODIFIED, newResource));
+                    }
+
+                    @Override
+                    public void onDelete(AgentPool resource, boolean deletedFinalStateUnknown) {
+                        executor.submit(() -> scheduler.onEvent(DELETED, resource));
+                    }
+                }, 5 * 1000L);
 
         try {
-            dummyClient.watch(new Watcher<>() {
-                @Override
-                public void eventReceived(Action action, AgentPool resource) {
-
-                    scheduler.onEvent(actionToEvent(action), resource);
-                }
-
-                @Override
-                public void onClose(WatcherException we) {
-                    log.error("Watcher exception  {}", we.getMessage(), we);
-                }
-            });
+            informer.run();
         } catch (Exception e) {
-            log.error("Watch exception", e);
+            log.error("Error while watching for CRs (namespace={})", namespace, e);
             System.exit(2);
-        }
-    }
-
-    private static Event.Type actionToEvent(Watcher.Action action) {
-        switch (action) {
-            case ADDED:
-            case MODIFIED: {
-                return Event.Type.MODIFIED;
-            }
-            case DELETED: {
-                return Event.Type.DELETED;
-            }
-            default:
-                throw new IllegalArgumentException("Unknown action type: " + action);
         }
     }
 
