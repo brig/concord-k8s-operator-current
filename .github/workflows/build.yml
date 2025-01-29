@@ -42,4 +42,4 @@ jobs:
           build-args: |
             from_image=gcr.io/distroless/java17-debian11
           tags: |
-            ybrig/concord-agent-operator:0.4.0-SNAPSHOT
+            ybrig/concord-agent-operator:0.2.0-SNAPSHOT
