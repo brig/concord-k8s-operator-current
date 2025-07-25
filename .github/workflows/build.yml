@@ -40,6 +40,6 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           build-args: |
-            from_image=gcr.io/distroless/java17-debian11
+            from_image=gcr.io/distroless/java17-debian12
           tags: |
             ybrig/concord-agent-operator:0.3.0-SNAPSHOT
