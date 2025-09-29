@@ -85,7 +85,7 @@ public class Operator {
                     public void onDelete(AgentPool resource, boolean deletedFinalStateUnknown) {
                         executor.submit(() -> scheduler.onEvent(DELETED, resource));
                     }
-                }, 5 * 1000L);
+                }, 0);
 
         try {
             informer.run();
