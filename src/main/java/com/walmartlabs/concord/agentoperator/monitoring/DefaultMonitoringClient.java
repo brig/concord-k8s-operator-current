@@ -159,6 +159,9 @@ public class DefaultMonitoringClient implements MonitoringClient {
             } catch (ClosedChannelException e) {
                 log.error("call error: closed channel");
             } catch (Exception e) {
+                if (e.getMessage() != null && e.getMessage().contains("java.lang.NullPointerException")) {
+                    return null;
+                }
                 log.error("call error", e);
             }
             log.info("retry after {} sec", RETRY_INTERVAL / 1000);

@@ -77,7 +77,7 @@ public class Operator {
                         if (oldResource == newResource) {
                             return;
                         }
-                        
+
                         executor.submit(() -> scheduler.onEvent(MODIFIED, newResource));
                     }
 
