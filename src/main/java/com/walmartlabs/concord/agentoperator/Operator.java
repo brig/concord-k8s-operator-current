@@ -32,7 +32,6 @@ import io.fabric8.kubernetes.client.informers.ResourceEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Executors;
 
 import static com.walmartlabs.concord.agentoperator.scheduler.Event.Type.DELETED;
 import static com.walmartlabs.concord.agentoperator.scheduler.Event.Type.MODIFIED;
@@ -57,8 +56,6 @@ public class Operator {
         var client = new DefaultKubernetesClient().inNamespace(namespace);
         var autoScalerFactory = new AutoScalerFactory(cfg, client);
         var agentClientFactory = new AgentClientFactory(true);
-        var executor = Executors.newCachedThreadPool();
-
         var scheduler = new Scheduler(autoScalerFactory, client, monitoringClient, agentClientFactory);
         scheduler.start();
 
@@ -69,21 +66,23 @@ public class Operator {
 
                     @Override
                     public void onAdd(AgentPool resource) {
-                        executor.submit(() -> scheduler.onEvent(MODIFIED, resource));
+                        scheduler.onEvent(MODIFIED, resource);
                     }
 
                     @Override
                     public void onUpdate(AgentPool oldResource, AgentPool newResource) {
-                        if (oldResource == newResource) {
+                        String oldVersion = oldResource.getMetadata().getResourceVersion();
+                        String newVersion = newResource.getMetadata().getResourceVersion();
+                        if (oldVersion != null && oldVersion.equals(newVersion)) {
                             return;
                         }
 
-                        executor.submit(() -> scheduler.onEvent(MODIFIED, newResource));
+                        scheduler.onEvent(MODIFIED, newResource);
                     }
 
                     @Override
                     public void onDelete(AgentPool resource, boolean deletedFinalStateUnknown) {
-                        executor.submit(() -> scheduler.onEvent(DELETED, resource));
+                        scheduler.onEvent(DELETED, resource);
                     }
                 }, 30_000);
 

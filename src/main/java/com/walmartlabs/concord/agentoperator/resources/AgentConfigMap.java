@@ -58,7 +58,7 @@ public final class AgentConfigMap {
         AgentPoolConfiguration spec = poolInstance.getResource().getSpec();
 
         String configMapYaml = objectMapper.writeValueAsString(spec.getConfigMap())
-                .replaceAll("%%configMapName%%", configMapName)
+                .replace("%%configMapName%%", configMapName)
                 .replace("%%preStopHook%%", escape(Resources.get("/prestop-hook.sh")));
 
         return client.configMaps().load(new ByteArrayInputStream(configMapYaml.getBytes())).item();

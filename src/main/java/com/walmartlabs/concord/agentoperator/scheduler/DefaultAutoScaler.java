@@ -95,7 +95,10 @@ public class DefaultAutoScaler implements AutoScaler {
 
         AgentPoolConfiguration cfg = i.getResource().getSpec();
 
-        if (!canBeScaledUp.apply(i) && !canBeScaledDown.apply(i)) {
+        boolean scaleUpAllowed = canBeScaledUp.apply(i);
+        boolean scaleDownAllowed = canBeScaledDown.apply(i);
+
+        if (!scaleUpAllowed && !scaleDownAllowed) {
             // was updated recently, skipping
             return i;
         }
@@ -127,7 +130,7 @@ public class DefaultAutoScaler implements AutoScaler {
 
         // Try scaling up if the time elapsed after last scale up operation
         // is greater than the scale up delay defined (default: 15s)
-        if (canBeScaledUp.apply(i)) {
+        if (scaleUpAllowed) {
             targetSize = tryScaleUp(cfg, i, podsCount, enqueuedCount, targetSize, maxPoolSizeThreshold, incrementThreshold);
 
             // Reset scaledown delay counter if enqueued count is greater than min threshold.
@@ -142,7 +145,7 @@ public class DefaultAutoScaler implements AutoScaler {
 
         // Try scaling down if the time elapsed after last scale down operation
         // is greater than the scale down delay defined (default: 180s)
-        if (canBeScaledDown.apply(i)) {
+        if (scaleDownAllowed) {
             targetSize = tryScaleDown(cfg, i, podsCount, enqueuedCount, targetSize, minPoolSizeThreshold);
         }
 

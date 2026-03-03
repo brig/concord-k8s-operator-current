@@ -87,8 +87,8 @@ public class TryToDeletePodChange implements Change {
         }
 
         // agent pod in maintenance mode and all workers done
-        client.pods().withName(podName).delete();
         PodUtils.applyTag(client, podName, AgentPod.PRE_STOP_HOOK_TERMINATION_LABEL, "true");
+        client.pods().withName(podName).delete();
         log.info("apply ['{}'] -> Marked for termination (former phase: {})", podName, pod.getStatus().getPhase());
     }
 

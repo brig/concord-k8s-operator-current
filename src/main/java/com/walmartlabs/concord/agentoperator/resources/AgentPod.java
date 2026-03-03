@@ -56,11 +56,11 @@ public final class AgentPod {
         AgentPoolConfiguration spec = poolInstance.getResource().getSpec();
 
         String podYaml = objectMapper.writeValueAsString(spec.getPod())
-                .replaceAll("%%podName%%", podName)
-                .replaceAll("%%app%%", AgentPool.SERVICE_FULL_NAME)
-                .replaceAll("%%" + POOL_NAME_LABEL + "%%", poolInstance.getName())
-                .replaceAll("%%configMapName%%", configMapName)
-                .replaceAll("%%" + CONFIG_HASH_LABEL + "%%", hash);
+                .replace("%%podName%%", podName)
+                .replace("%%app%%", AgentPool.SERVICE_FULL_NAME)
+                .replace("%%" + POOL_NAME_LABEL + "%%", poolInstance.getName())
+                .replace("%%configMapName%%", configMapName)
+                .replace("%%" + CONFIG_HASH_LABEL + "%%", hash);
 
         client.pods().load(new ByteArrayInputStream(podYaml.getBytes())).create();
     }
