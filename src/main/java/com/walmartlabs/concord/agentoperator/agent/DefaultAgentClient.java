@@ -21,9 +21,6 @@ package com.walmartlabs.concord.agentoperator.agent;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.immutables.value.Value;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -70,13 +67,6 @@ public class DefaultAgentClient implements AgentClient {
         return entity.maintenanceMode() && entity.workersAlive() > 0;
     }
 
-    @Value.Immutable
-    @JsonSerialize(as = ImmutableMaintenanceMode.class)
-    @JsonDeserialize(as = ImmutableMaintenanceMode.class)
-    public interface MaintenanceMode {
-
-        boolean maintenanceMode();
-
-        int workersAlive();
+    public record MaintenanceMode(boolean maintenanceMode, int workersAlive) {
     }
 }

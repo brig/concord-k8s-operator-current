@@ -16,9 +16,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <concord.version>2.20.0</concord.version>
+        <concord.version>2.40.0</concord.version>
         <kubernetes.version>7.6.0</kubernetes.version>
 
+        <bouncycastle.version>1.84</bouncycastle.version>
+        <commons.collections.version>3.2.2</commons.collections.version>
         <slf4j.version>2.0.17</slf4j.version>
         <jackson.version>2.20.2</jackson.version>
         <snakeyaml.version>2.4</snakeyaml.version>
@@ -63,11 +65,13 @@
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-ext-jdk15on</artifactId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>${bouncycastle.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>${bouncycastle.version}</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -123,6 +127,7 @@
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
+            <version>${commons.collections.version}</version>
         </dependency>
 
         <dependency>
