@@ -17,12 +17,12 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <concord.version>2.40.0</concord.version>
-        <kubernetes.version>7.6.0</kubernetes.version>
+        <kubernetes.version>7.7.0</kubernetes.version>
 
         <bouncycastle.version>1.84</bouncycastle.version>
         <commons.collections.version>3.2.2</commons.collections.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <jackson.version>2.20.2</jackson.version>
+        <jackson.version>2.21.3</jackson.version>
         <snakeyaml.version>2.4</snakeyaml.version>
     </properties>
 
@@ -30,6 +30,12 @@
         <dependency>
             <groupId>com.walmartlabs.concord</groupId>
             <artifactId>concord-common</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.takari.bpm</groupId>
+                    <artifactId>bpm-engine-impl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- k8s stuff -->
